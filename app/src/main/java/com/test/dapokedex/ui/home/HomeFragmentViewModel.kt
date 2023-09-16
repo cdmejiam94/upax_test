@@ -19,13 +19,16 @@ class HomeFragmentViewModel @Inject constructor(
     private val _pokemonList = MutableLiveData<List<PokeResult>>()
     val pokemonList: LiveData<List<PokeResult>> = _pokemonList
 
+    var currentOffset = 0
+
     init {
-        getPokemonList()
+        getPokemonList(currentOffset)
     }
 
-    private fun getPokemonList() {
+    fun getPokemonList(offset: Int) {
         viewModelScope.launch {
-            dataSource.fetchPokemon(25, 0)
+            currentOffset = offset
+            dataSource.fetchPokemon(25, offset)
                 .catch { it.message }
                 .collect { result ->
                     if (result.status == Result.Status.SUCCESS) {

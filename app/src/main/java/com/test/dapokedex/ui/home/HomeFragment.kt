@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.test.dapokedex.MainActivity
 import com.test.dapokedex.R
 import com.test.dapokedex.databinding.FragmentHomeBinding
@@ -27,6 +28,9 @@ class HomeFragment: Fragment() {
 
     private var homeFragmentAdaper: HomeFragmentAdapter? = null
 
+    var rowsArrayList: ArrayList<String> = ArrayList()
+    var isLoading = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,7 +45,7 @@ class HomeFragment: Fragment() {
 
         homeFragmentAdaper = HomeFragmentAdapter {
             parentFragmentManager.beginTransaction().apply {
-                replace(R.id.fragment_container,DetailFragment.newInstance(it))
+                replace(R.id.fragment_container,DetailFragment.newInstance(it + homeFragmentViewModel.currentOffset))
                 commit()
             }
         }
@@ -51,6 +55,12 @@ class HomeFragment: Fragment() {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = homeFragmentAdaper
             }
+
+            pagingButton.setOnClickListener {
+                homeFragmentViewModel.getPokemonList(
+                    homeFragmentViewModel.currentOffset.plus(25)
+                )
+            }
         }
 
         homeFragmentViewModel.pokemonList.observe(viewLifecycleOwner) {
@@ -58,8 +68,25 @@ class HomeFragment: Fragment() {
                 homeFragmentAdaper?.submitList(it)
             }
         }
+
+
     }
 
+    private fun initScrollListener() {
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() ==
+                        rowsArrayList.size - 1) {
+
+                        isLoading = true
+                    }
+                }
+            }
+        })
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         binding.recyclerView.adapter = null
