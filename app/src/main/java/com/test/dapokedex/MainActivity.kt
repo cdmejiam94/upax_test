@@ -1,6 +1,7 @@
 package com.test.dapokedex
 
 import android.os.Bundle
+import android.window.OnBackInvokedDispatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.test.dapokedex.databinding.ActivityMainBinding
@@ -30,6 +31,10 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+    }
+
+    override fun onBackPressed() {
+        setCurrentFragment(HomeFragment.newInstance())
     }
 
     private fun setCurrentFragment(fragment: Fragment)=
