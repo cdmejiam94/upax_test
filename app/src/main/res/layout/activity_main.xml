@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:titleCentered="true"
         app:titleTextColor="@color/cardview_light_background"
-        android:background="@color/design_default_color_primary"
+        android:background="?android:attr/colorEdgeEffect"
         app:title="@string/app_name"/>
 
     <FrameLayout
